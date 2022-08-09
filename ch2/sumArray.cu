@@ -9,6 +9,7 @@ __global__ void sumArrayOnDevice(float *A, float *B, float *C, int n)
 	for (int i = 0; i < n; i++)
 	{
 		C[i] = A[i] + B[i];
+		printf("%f\n", C[i]);
 	}
 }
 
@@ -51,13 +52,17 @@ int main()
 	initData(A, nElem);
 	initData(B, nElem);
 
-	cudaMemcpy(A, cA, nBytes, cudaMemcpyHostToDevice);
-	cudaMemcpy(B, cB, nBytes, cudaMemcpyHostToDevice);
+	cudaMemcpy(cA, A, nBytes, cudaMemcpyHostToDevice);
+	cudaMemcpy(cB, A, nBytes, cudaMemcpyHostToDevice);
 
 	//sumArrayOnHost(A,B,C,nElem);
 	
-	sumArrayOnDevice<<<1,10>>>(A, B, C, nElem);
-	cudaMemcpy(cC, C, nBytes, cudaMemcpyDeviceToHost);
+	sumArrayOnDevice<<<1,1>>>(cA, cB, cC, nElem);
+	printArray(C, nElem);
+	printf("\n\n\n\n\n");
+
+	//	block, wait for answer
+	cudaMemcpy(C, cC, nBytes, cudaMemcpyDeviceToHost);
 	
 	// maybe gpu not finish,TODO!!!
 	printArray(C, nElem);

@@ -8,7 +8,7 @@ __global__ void hellofromGPU(void)
 int main()
 {
 	printf("hello CUDA, Im coming!\n");
-	hellofromGPU<<<1, 10>>>();
+	hellofromGPU<<<5, 10>>>();
 	cudaDeviceReset();
 	return 0;
 }
