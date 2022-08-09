@@ -6,6 +6,7 @@
 
 __global__ void sumArrayOnDevice(float *A, float *B, float *C, int n)
 {
+	printf("this from block(%d, %d, %d), thread(%d,%d,%d)\n", blockIdx.x, blockIdx.y, blockIdx.z, threadIdx.x, threadIdx.y, threadIdx.z);
 	for (int i = 0; i < n; i++)
 	{
 		C[i] = A[i] + B[i];
@@ -55,7 +56,7 @@ int main()
 	cudaMemcpy(cA, A, nBytes, cudaMemcpyHostToDevice);
 	cudaMemcpy(cB, A, nBytes, cudaMemcpyHostToDevice);
 	
-	sumArrayOnDevice<<<1,1>>>(cA, cB, cC, nElem);
+	sumArrayOnDevice<<<3,5>>>(cA, cB, cC, nElem);
 
 	//	get all 0 data, just init data
 	//printArray(C, nElem);
