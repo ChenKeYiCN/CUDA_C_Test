@@ -9,7 +9,6 @@ __global__ void sumArrayOnDevice(float *A, float *B, float *C, int n)
 	for (int i = 0; i < n; i++)
 	{
 		C[i] = A[i] + B[i];
-		printf("%f\n", C[i]);
 	}
 }
 
@@ -39,10 +38,11 @@ int main()
 {
 	int nElem = 1024;
 	size_t nBytes = nElem * sizeof(float);
-	float *A, *B, *C;
+	float *A, *B, *C, *D;
 	A = (float*)malloc(nBytes);
 	B = (float*)malloc(nBytes);
 	C = (float*)malloc(nBytes);
+	D = (float*)malloc(nBytes);
 
 	float *cA, *cB, *cC;
 	cudaMalloc((float**)&cA, nBytes);
@@ -54,21 +54,26 @@ int main()
 
 	cudaMemcpy(cA, A, nBytes, cudaMemcpyHostToDevice);
 	cudaMemcpy(cB, A, nBytes, cudaMemcpyHostToDevice);
-
-	//sumArrayOnHost(A,B,C,nElem);
 	
 	sumArrayOnDevice<<<1,1>>>(cA, cB, cC, nElem);
-	printArray(C, nElem);
-	printf("\n\n\n\n\n");
+
+	//	get all 0 data, just init data
+	//printArray(C, nElem);
+	//printf("\n\n\n\n\n");
 
 	//	block, wait for answer
 	cudaMemcpy(C, cC, nBytes, cudaMemcpyDeviceToHost);
-	
-	// maybe gpu not finish,TODO!!!
 	printArray(C, nElem);
+
+	//	do same in cpu, check answer
+	printf("\n\n\n\n\n");
+	sumArrayOnHost(A,B,D,nElem);
+	printArray(D, nElem);
+
 	free(A);
 	free(B);
 	free(C);
+	free(D);
 
 	cudaFree(cA);
 	cudaFree(cB);
